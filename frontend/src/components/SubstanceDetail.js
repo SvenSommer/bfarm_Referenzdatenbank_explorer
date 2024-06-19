@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
-import { fetchSubstanceByKey } from '../api';
+import { fetchSubstanceById } from '../api';
 
 const SubstanceDetail = () => {
     const [substance, setSubstance] = useState(null);
@@ -10,7 +10,7 @@ const SubstanceDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await fetchSubstanceByKey(key);
+                const data = await fetchSubstanceById(key);
                 setSubstance(data);
             } catch (error) {
                 console.error('Error fetching substance details:', error);
@@ -23,31 +23,24 @@ const SubstanceDetail = () => {
 
     return (
         <div>
-            <h1>{substance.name}</h1>
+            <h1>{substance.substance_name}</h1>
+            <h2>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h2>
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>Attribute</th>
-                        <th>Value</th>
+                        <th>Pharmazeutisches Produkt</th>
+                        <th>Beschreibung</th>
+                        <th>Wirkstärke</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Strength</td>
-                        <td>{substance.strength}</td>
-                    </tr>
-                    <tr>
-                        <td>Substance ID</td>
-                        <td>{substance.substance_id}</td>
-                    </tr>
-                    <tr>
-                        <td>Rank</td>
-                        <td>{substance.rank}</td>
-                    </tr>
-                    <tr>
-                        <td>Key</td>
-                        <td>{substance.key}</td>
-                    </tr>
+                    {substance.pharmaceutical_products.map(product => (
+                        <tr key={product.pharmaceutical_product_key}>
+                            <td><Link to={`/pharmaceutical_product/${product.pharmaceutical_product_key}`}>{product.pharmaceutical_product_key}</Link></td>
+                            <td>{product.description}</td>
+                            <td>{product.strength}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </Table>
         </div>

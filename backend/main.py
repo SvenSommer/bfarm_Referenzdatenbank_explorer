@@ -43,34 +43,6 @@ def get_medicinal_product(pzn):
     else:
         return jsonify({"error": "PZN not found"}), 404
 
-@app.route('/substance/<substance_name>', methods=['GET'])
-def get_products_by_substance(substance_name):
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 10))
-    products = data.get_products_by_substance(substance_name)
-    if products:
-        paginated_result = paginate([{
-            "key": pp.key,
-            "medicinal_product_key": pp.medicinal_product_key,
-            "number": pp.number,
-            "put_short": pp.put_short,
-            "put_long": pp.put_long,
-            "name": pp.name,
-            "term_id": pp.term_id,
-            "description": pp.description,
-            "substances": [{
-                "key": sub.key,
-                "name": sub.name,
-                "strength": sub.strength,
-                "substance_id": sub.substance_id,
-                "rank": sub.rank,
-                "link": f"/substance/{sub.key}"
-            } for sub in pp.substances],
-            "link": f"/pharmaceutical_product/{pp.key}"
-        } for pp in products], page, per_page)
-        return jsonify(paginated_result)
-    else:
-        return jsonify({"error": "Substance not found"}), 404
 
 def paginate(queryset, page, per_page):
     total_items = len(queryset)
@@ -127,18 +99,21 @@ def list_pharmaceutical_products():
 def list_substances():
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
-    substances = [
-        {
-            "key": sub.key,
-            "pharmaceutical_product_key": sub.pharmaceutical_product_key,
-            "name": sub.name,
-            "strength": sub.strength,
-            "substance_id": sub.substance_id,
-            "rank": sub.rank,
-            "link": f"/substance/{sub.key}"
-        } for sub in data.substances.values()
-    ]
-    return jsonify(paginate(substances, page, per_page))
+    # Verwende ein Set, um doppelte Einträge zu vermeiden
+    unique_substances = {}
+    
+    for sub in data.substances.values():
+        if sub.substance_id not in unique_substances:
+            unique_substances[sub.substance_id] = {
+                "name": sub.name,
+                "substance_id": sub.substance_id,
+                "link": f"/substance_id/{sub.substance_id}"
+            }
+
+    substances_list = list(unique_substances.values())
+    
+    return jsonify(paginate(substances_list, page, per_page))
+
 
 @app.route('/pharmaceutical_product/<key>', methods=['GET'])
 def get_pharmaceutical_product(key):
@@ -166,7 +141,7 @@ def get_pharmaceutical_product(key):
     else:
         return jsonify({"error": "Pharmaceutical product not found"}), 404
 
-@app.route('/substance/<key>', methods=['GET'])
+@app.route('/substance_key/<key>', methods=['GET'])
 def get_substance(key):
     substance = data.substances.get(key)
     if substance:
@@ -181,6 +156,29 @@ def get_substance(key):
         })
     else:
         return jsonify({"error": "Substance not found"}), 404
+    
+@app.route('/substance_id/<substance_id>', methods=['GET'])
+def get_pharmaceutical_products_by_substance_id(substance_id):
+    substance_products = [
+        {
+            "pharmaceutical_product_key": sub.pharmaceutical_product_key,
+            "description": data.pharmaceutical_products[sub.pharmaceutical_product_key].description,
+            "strength": sub.strength,
+            "link": f"/pharmaceutical_product/{sub.pharmaceutical_product_key}"
+        }
+        for sub in data.substances.values() if sub.substance_id == int(substance_id)
+    ]
+    
+    if substance_products:
+        # Der Name des Wirkstoffs wird aus dem ersten gefundenen Substanzdatensatz entnommen
+        substance_name = next(sub.name for sub in data.substances.values() if sub.substance_id == int(substance_id))
+        return jsonify({
+            "substance_name": substance_name,
+            "pharmaceutical_products": substance_products
+        })
+    else:
+        return jsonify({"error": "Substance not found"}), 404
+
 
 @app.route('/')
 def index():

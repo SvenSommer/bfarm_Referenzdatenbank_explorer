@@ -46,18 +46,15 @@ const PharmaceuticalProductList = () => {
                         <th>Key</th>
                         <th>Name</th>
                         <th>Short Form</th>
-                        <th>Details</th>
                     </tr>
                 </thead>
                 <tbody>
                     {pharmaceuticalProducts.map(product => (
                         <tr key={product.key}>
-                            <td>{product.key}</td>
+                            <td><Link to={`/pharmaceutical_product/${product.key}`}>{product.key}</Link></td>
                             <td>{product.name}</td>
                             <td>{product.put_short}</td>
-                            <td>
-                                <Link to={`/pharmaceutical_product/${product.key}`}>Details</Link>
-                            </td>
+
                         </tr>
                     ))}
                 </tbody>

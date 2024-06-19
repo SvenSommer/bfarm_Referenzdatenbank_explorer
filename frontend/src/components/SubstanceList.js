@@ -30,7 +30,7 @@ const SubstanceList = () => {
 
     return (
         <div>
-            <h1>Substances</h1>
+            <h1>Wirkstoffe</h1>
             <Form.Group controlId="perPageSelect">
                 <Form.Label>Items per page:</Form.Label>
                 <Form.Control as="select" value={perPage} onChange={handlePerPageChange}>
@@ -43,20 +43,14 @@ const SubstanceList = () => {
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>Key</th>
-                        <th>Name</th>
-                        <th>Strength</th>
-                        <th>Details</th>
+                        <th>Bezeichnung des Wirkstoffs</th>
                     </tr>
                 </thead>
                 <tbody>
                     {substances.map(substance => (
                         <tr key={substance.key}>
-                            <td>{substance.key}</td>
-                            <td>{substance.name}</td>
-                            <td>{substance.strength}</td>
                             <td>
-                                <Link to={`/substance/${substance.key}`}>Details</Link>
+                                <Link to={`/substance_id/${substance.substance_id}`}>{substance.name}</Link>
                             </td>
                         </tr>
                     ))}

@@ -40,10 +40,11 @@ export const fetchPharmaceuticalProductByKey = async (key) => {
     return response.json();
 };
 
-export const fetchSubstanceByKey = async (key) => {
-    const response = await fetch(`${API_BASE_URL}/substance/${key}`);
+export const fetchSubstanceById = async (key) => {
+    console.log(key);
+    const response = await fetch(`${API_BASE_URL}/substance_id/${key}`);
     if (!response.ok) {
-        throw new Error(`Failed to fetch substance with key ${key}`);
+        throw new Error(`Failed to fetch substance with id ${key}`);
     }
     return response.json();
 };

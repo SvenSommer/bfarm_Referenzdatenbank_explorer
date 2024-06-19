@@ -23,29 +23,57 @@ const MedicinalProductDetail = () => {
 
     return (
         <div>
-            <h1>{product.name}</h1>
-            <p>{product.put_long}</p>
-            <h2>Pharmaceutical Products</h2>
+            <h1>Medizinisches Produkt mit PZN: {product.pzn}</h1>
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>Key</th>
-                        <th>Name</th>
-                        <th>Short Form</th>
-                        <th>Description</th>
-                        <th>Details</th>
+                        <th>PZN</th>
+                        <th>Anzahl aller Wirkstoffe</th>
+                        <th>Kombipackung</th>
+                        <th>Darreichungsform (kurz)</th>
+                        <th>Darreichungsform (lang)</th>
+                        <th>Darreichungsform (BfArM)</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                        <tr key={product.key}>
+                            <td>{product.pzn}</td>
+                            <td>{product.count_substance}</td>
+                            <td>{product.multiple_ppt === 1 ? "Ja" : "Nein"}</td>
+                            <td>{product.put_short}</td>
+                            <td>{product.put_long}</td>
+                            <td>{product.name}</td>
+                        </tr>
+                    
+                </tbody>
+            </Table>
+            <h2>enthält folgende Pharmazeutische Produkte</h2>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>Produktschlüssel</th>
+                        <th>Darreichungsform (kurz)</th>
+                        <th>Darreichungsform (lang)</th>
+                        <th>Darreichungsform (BfArM)</th>
+                        <th>Anzahl der Wirkstoffe</th>
+                        <th>Beschreibung</th>
                     </tr>
                 </thead>
                 <tbody>
                     {product.pharmaceutical_products.map(pp => (
                         <tr key={pp.key}>
-                            <td>{pp.key}</td>
-                            <td>{pp.name}</td>
-                            <td>{pp.put_short}</td>
-                            <td>{pp.description}</td>
-                            <td>
-                                <Link to={`/pharmaceutical_product/${pp.key}`}>Details</Link>
+                             <td>
+                                <Link to={`/pharmaceutical_product/${pp.key}`}>{pp.key}</Link>
                             </td>
+                            <td>{pp.put_short}</td>
+                            <td>{pp.put_long}</td>
+                            <td>{pp.name}</td>
+                            <td>
+                                <Link to={`/pharmaceutical_product/${pp.key}`}>{pp.substances.length}</Link>
+                            </td>
+                            <td>{pp.description}</td>
                         </tr>
                     ))}
                 </tbody>
