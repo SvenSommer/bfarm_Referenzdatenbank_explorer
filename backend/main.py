@@ -2,10 +2,10 @@ from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from models import BfarmData
 
-app = Flask(__name__, static_folder='../static', template_folder='../templates')
+app = Flask(__name__, static_folder='./../static', template_folder='./../templates')
 CORS(app)
 # Initialize BfarmData
-data = BfarmData(zip_file_path='./data/20240617-REFERENCE.zip', extraction_dir='./data/20240617-REFERENCE')
+data = BfarmData(zip_file_path='./../data/20240617-REFERENCE.zip', extraction_dir='./../data/20240617-REFERENCE')
 
 @app.route('/pzn/<pzn>', methods=['GET'])
 def get_medicinal_product(pzn):
