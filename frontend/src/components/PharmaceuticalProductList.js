@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Form } from 'react-bootstrap';
 import { fetchPharmaceuticalProducts } from '../api';
 import { Link } from 'react-router-dom';
-import Pagination from './Pagination';
+import PaginationContainer from './PaginationContainer';
 
 const PharmaceuticalProductList = () => {
     const [pharmaceuticalProducts, setPharmaceuticalProducts] = useState([]);
@@ -29,37 +29,36 @@ const PharmaceuticalProductList = () => {
     };
 
     return (
-        <div className="container">
-            <h1>Pharmaceutical Products</h1>
-            <Form.Group controlId="perPageSelect">
-                <Form.Label>Items per page:</Form.Label>
-                <Form.Control as="select" value={perPage} onChange={handlePerPageChange}>
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                </Form.Control>
-            </Form.Group>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Key</th>
-                        <th>Name</th>
-                        <th>Short Form</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {pharmaceuticalProducts.map(product => (
-                        <tr key={product.key}>
-                            <td><Link to={`/pharmaceutical_product/${product.key}`}>{product.key}</Link></td>
-                            <td>{product.name}</td>
-                            <td>{product.put_short}</td>
-
+        <div className="pharmaceutical-product-list">
+            <div className="container">
+                <h1>Pharmazeutische Produkte</h1>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Name</th>
+                            <th>Short Form</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
-            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                    </thead>
+                    <tbody>
+                        {pharmaceuticalProducts.map(product => (
+                            <tr key={product.key}>
+                                <td><Link to={`/pharmaceutical_product/${product.key}`}>{product.key}</Link></td>
+                                <td>{product.name}</td>
+                                <td>{product.put_short}</td>
+
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+                <PaginationContainer 
+                currentPage={page} 
+                totalPages={totalPages} 
+                onPageChange={setPage} 
+                perPage={perPage} 
+                onPerPageChange={setPerPage} 
+            />
+            </div>
         </div>
     );
 };

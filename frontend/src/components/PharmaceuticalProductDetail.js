@@ -24,6 +24,7 @@ const PharmaceuticalProductDetail = () => {
     return (
         <div className="container">
             <h1>Pharmazeutische Produkt mit Produktschlüssel: {product.key}</h1>
+            <Link to={`/`}>  zurück</Link>
             <Table striped bordered hover>
                 <thead>
                     <tr>

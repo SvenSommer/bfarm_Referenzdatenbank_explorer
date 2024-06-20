@@ -24,6 +24,7 @@ const MedicinalProductDetail = () => {
     return (
         <div className="container">
             <h1>Medizinisches Produkt mit PZN: {product.pzn}</h1>
+            <Link to={`/`}>  zurück</Link>
             <Table striped bordered hover>
                 <thead>
                     <tr>

@@ -24,6 +24,7 @@ const SubstanceDetail = () => {
     return (
         <div className="container">
             <h1>Wirkstoff: {substance.substance_name}</h1>
+            <Link to={`/`}>  zurück</Link>
             <h3>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h3>
             <Table striped bordered hover>
                 <thead>
