@@ -182,7 +182,5 @@ def get_pharmaceutical_products_by_substance_id(substance_id):
 
 @app.route('/')
 def index():
-    return "Welcome to the Bfarm Data Explorer!"
+    return "Welcome to the Bfarm Data Explorer Backend!"
 
-if __name__ == '__main__':
-    app.run(debug=True)
