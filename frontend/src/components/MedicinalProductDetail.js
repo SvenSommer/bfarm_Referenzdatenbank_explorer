@@ -19,10 +19,10 @@ const MedicinalProductDetail = () => {
         fetchData();
     }, [pzn]);
 
-    if (!product) return <div>Loading...</div>;
+    if (!product) return  <div className="container">Loading...</div>;
 
     return (
-        <div>
+        <div className="container">
             <h1>Medizinisches Produkt mit PZN: {product.pzn}</h1>
             <Table striped bordered hover>
                 <thead>

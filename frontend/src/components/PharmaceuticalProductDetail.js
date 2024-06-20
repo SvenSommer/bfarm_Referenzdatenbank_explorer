@@ -19,15 +19,16 @@ const PharmaceuticalProductDetail = () => {
         fetchData();
     }, [key]);
 
-    if (!product) return <div>Loading...</div>;
+    if (!product) return  <div className="container">Loading...</div>;
 
     return (
-        <div>
-            <h1>Produktdetails zu {product.key}</h1>
+        <div className="container">
+            <h1>Pharmazeutische Produkt mit Produktschlüssel: {product.key}</h1>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>Produktschlüssel</th>
+                        <th>PZN</th>
                         <th>Darreichungsform (kurz)</th>
                         <th>Darreichungsform (lang)</th>
                         <th>Darreichungsform (BfArM)</th>
@@ -39,6 +40,7 @@ const PharmaceuticalProductDetail = () => {
      
                         <tr key={product.key}>
                             <td>{product.key}</td>
+                            <td><Link to={`/pzn/${product.medicinal_product_key}`}>{product.medicinal_product_key}</Link></td>
                             <td>{product.put_short}</td>
                             <td>{product.put_long}</td>
                             <td>{product.name}</td>

@@ -19,12 +19,12 @@ const SubstanceDetail = () => {
         fetchData();
     }, [key]);
 
-    if (!substance) return <div>Loading...</div>;
+    if (!substance) return  <div className="container">Loading...</div>;
 
     return (
-        <div>
-            <h1>{substance.substance_name}</h1>
-            <h2>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h2>
+        <div className="container">
+            <h1>Wirkstoff: {substance.substance_name}</h1>
+            <h3>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h3>
             <Table striped bordered hover>
                 <thead>
                     <tr>

@@ -29,7 +29,7 @@ const SubstanceList = () => {
     };
 
     return (
-        <div>
+        <div className="container">
             <h1>Wirkstoffe</h1>
             <Form.Group controlId="perPageSelect">
                 <Form.Label>Items per page:</Form.Label>

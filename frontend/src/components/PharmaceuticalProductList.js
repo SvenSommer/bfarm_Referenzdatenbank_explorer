@@ -29,7 +29,7 @@ const PharmaceuticalProductList = () => {
     };
 
     return (
-        <div>
+        <div className="container">
             <h1>Pharmaceutical Products</h1>
             <Form.Group controlId="perPageSelect">
                 <Form.Label>Items per page:</Form.Label>
