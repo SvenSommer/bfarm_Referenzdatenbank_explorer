@@ -3,7 +3,8 @@ from flask_cors import CORS
 from models import BfarmData
 
 app = Flask(__name__, static_folder='./../static', template_folder='./../templates')
-CORS(app)
+allowed_origins = ["http://localhost:3000", "https://your-frontend-app.onrender.com"]
+CORS(app, resources={r"/*": {"origins": allowed_origins}})
 # Initialize BfarmData
 data = BfarmData(zip_file_path='./../data/20240617-REFERENCE.zip', extraction_dir='./../data/20240617-REFERENCE')
 

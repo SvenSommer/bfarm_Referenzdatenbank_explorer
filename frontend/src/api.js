@@ -1,4 +1,6 @@
-const API_BASE_URL = "http://127.0.0.1:5000";
+const API_BASE_URL = "http://bfarm-referenzdatenbank-explorer.onrender.com:8000";
+const API_BASE_URL_dev = "http://127.0.0.1:5000";
+
 
 export const fetchMedicinalProducts = async (page = 1, perPage = 10) => {
     const response = await fetch(`${API_BASE_URL}/medicinal_products?page=${page}&per_page=${perPage}`);
