@@ -36,6 +36,7 @@ const SubstanceDetail = () => {
                 </p>
             </div>
             <h2>Wirkstoff: {substance.substance_name}</h2>
+            <p>ASK-Nr. BfArM: {substance.substance_id}</p>
             <Link to={`/`}>  zurück</Link>
             <h3>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h3>
             <Table striped bordered hover>

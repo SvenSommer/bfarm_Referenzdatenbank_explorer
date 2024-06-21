@@ -175,6 +175,7 @@ def get_pharmaceutical_products_by_substance_id(substance_id):
         substance_name = next(sub.name for sub in data.substances.values() if sub.substance_id == int(substance_id))
         return jsonify({
             "substance_name": substance_name,
+            "substance_id": substance_id,
             "pharmaceutical_products": substance_products
         })
     else:

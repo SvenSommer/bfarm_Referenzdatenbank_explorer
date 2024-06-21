@@ -70,6 +70,7 @@ const PharmaceuticalProductDetail = () => {
                         <th>Rang</th>
                         <th>Bezeichnung des Wirkstoffs</th>
                         <th>Wirkstärke</th>
+                        <th>ASK-Nr. BfArM</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,6 +79,7 @@ const PharmaceuticalProductDetail = () => {
                             <td>{substance.rank}</td>
                             <td><Link to={`/substance_id/${substance.substance_id}`}>{substance.name}</Link></td>
                             <td>{substance.strength}</td>
+                            <td>{substance.substance_id}</td>
                         </tr>
                     ))}
                 </tbody>
