@@ -19,11 +19,15 @@ const MedicinalProductDetail = () => {
         fetchData();
     }, [pzn]);
 
-    if (!product) return  <div className="container">Loading...</div>;
+    if (!product) return <div className="container">Loading...</div>;
 
     return (
         <div className="container">
-            <h1>Medizinisches Produkt mit PZN: {product.pzn}</h1>
+            <h1>BfArM Data Explorer</h1>
+            <h6>Eine Visualisierung der <a href="https://www.bfarm.de/DE/Arzneimittel/Arzneimittelinformationen/Referenzdatenbank/_node.html" target="_blank" rel="noopener noreferrer">
+                BfArM  Referenzdatenbank für Fertigarzneimittel gemäß § 31b SGB V
+            </a> </h6><p></p>
+            <h2>Medizinisches Produkt mit PZN: {product.pzn}</h2>
             <Link to={`/`}>  zurück</Link>
             <Table striped bordered hover>
                 <thead>
@@ -38,16 +42,16 @@ const MedicinalProductDetail = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    
-                        <tr key={product.key}>
-                            <td>{product.pzn}</td>
-                            <td>{product.count_substance}</td>
-                            <td>{product.multiple_ppt === 1 ? "Ja" : "Nein"}</td>
-                            <td>{product.put_short}</td>
-                            <td>{product.put_long}</td>
-                            <td>{product.name}</td>
-                        </tr>
-                    
+
+                    <tr key={product.key}>
+                        <td>{product.pzn}</td>
+                        <td>{product.count_substance}</td>
+                        <td>{product.multiple_ppt === 1 ? "Ja" : "Nein"}</td>
+                        <td>{product.put_short}</td>
+                        <td>{product.put_long}</td>
+                        <td>{product.name}</td>
+                    </tr>
+
                 </tbody>
             </Table>
             <h2>enthält folgende Pharmazeutische Produkte</h2>
@@ -65,7 +69,7 @@ const MedicinalProductDetail = () => {
                 <tbody>
                     {product.pharmaceutical_products.map(pp => (
                         <tr key={pp.key}>
-                             <td>
+                            <td>
                                 <Link to={`/pharmaceutical_product/${pp.key}`}>{pp.key}</Link>
                             </td>
                             <td>{pp.put_short}</td>

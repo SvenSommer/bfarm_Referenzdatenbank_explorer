@@ -19,11 +19,15 @@ const SubstanceDetail = () => {
         fetchData();
     }, [key]);
 
-    if (!substance) return  <div className="container">Loading...</div>;
+    if (!substance) return <div className="container">Loading...</div>;
 
     return (
         <div className="container">
-            <h1>Wirkstoff: {substance.substance_name}</h1>
+            <h1>BfArM Data Explorer</h1>
+            <h6>Eine Visualisierung der <a href="https://www.bfarm.de/DE/Arzneimittel/Arzneimittelinformationen/Referenzdatenbank/_node.html" target="_blank" rel="noopener noreferrer">
+                BfArM  Referenzdatenbank für Fertigarzneimittel gemäß § 31b SGB V
+            </a> </h6><p></p>
+            <h2>Wirkstoff: {substance.substance_name}</h2>
             <Link to={`/`}>  zurück</Link>
             <h3>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h3>
             <Table striped bordered hover>

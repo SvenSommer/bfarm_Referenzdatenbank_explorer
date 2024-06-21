@@ -19,11 +19,15 @@ const PharmaceuticalProductDetail = () => {
         fetchData();
     }, [key]);
 
-    if (!product) return  <div className="container">Loading...</div>;
+    if (!product) return <div className="container">Loading...</div>;
 
     return (
         <div className="container">
-            <h1>Pharmazeutische Produkt mit Produktschlüssel: {product.key}</h1>
+            <h1>BfArM Data Explorer</h1>
+            <h6>Eine Visualisierung der <a href="https://www.bfarm.de/DE/Arzneimittel/Arzneimittelinformationen/Referenzdatenbank/_node.html" target="_blank" rel="noopener noreferrer">
+                BfArM  Referenzdatenbank für Fertigarzneimittel gemäß § 31b SGB V
+            </a> </h6><p></p>
+            <h2>Pharmazeutische Produkt mit Produktschlüssel: {product.key}</h2>
             <Link to={`/`}>  zurück</Link>
             <Table striped bordered hover>
                 <thead>
@@ -38,24 +42,24 @@ const PharmaceuticalProductDetail = () => {
                     </tr>
                 </thead>
                 <tbody>
-     
-                        <tr key={product.key}>
-                            <td>{product.key}</td>
-                            <td><Link to={`/pzn/${product.medicinal_product_key}`}>{product.medicinal_product_key}</Link></td>
-                            <td>{product.put_short}</td>
-                            <td>{product.put_long}</td>
-                            <td>{product.name}</td>
-                            <td>{product.substances.length}</td>
-                            <td>{product.description}</td>
-                        </tr>
-                    
+
+                    <tr key={product.key}>
+                        <td>{product.key}</td>
+                        <td><Link to={`/pzn/${product.medicinal_product_key}`}>{product.medicinal_product_key}</Link></td>
+                        <td>{product.put_short}</td>
+                        <td>{product.put_long}</td>
+                        <td>{product.name}</td>
+                        <td>{product.substances.length}</td>
+                        <td>{product.description}</td>
+                    </tr>
+
                 </tbody>
             </Table>
             <h2>enthält folgende Wirkstoffe</h2>
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                    <th>Rang</th>
+                        <th>Rang</th>
                         <th>Bezeichnung des Wirkstoffs</th>
                         <th>Wirkstärke</th>
                     </tr>
