@@ -30,3 +30,27 @@ h1 {
 .items-per-page label {
     margin-right: 10px;
 }
+
+.repo-notice {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.repo-notice p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.repo-notice a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.repo-notice a:hover {
+    text-decoration: underline;
+}

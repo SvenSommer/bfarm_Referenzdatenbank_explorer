@@ -40,7 +40,8 @@ requirements.txt
 4. **Starte den Flask-Server:**
 
     ```sh
-    python explorer/main.py
+    cd explorer
+    gunicorn -w 4 -b 0.0.0.0:8000 main:app
     ```
 
 ## Endpunkte

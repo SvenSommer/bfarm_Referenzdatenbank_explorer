@@ -27,6 +27,14 @@ const SubstanceDetail = () => {
             <h6>Eine Visualisierung der <a href="https://www.bfarm.de/DE/Arzneimittel/Arzneimittelinformationen/Referenzdatenbank/_node.html" target="_blank" rel="noopener noreferrer">
                 BfArM  Referenzdatenbank für Fertigarzneimittel gemäß § 31b SGB V
             </a> </h6><p></p>
+            <div className="repo-notice">
+                <p>
+                    Hast du einen Verbesserungsvorschlag? Schick einen Pull Request! 👉 
+                    <a href="https://github.com/SvenSommer/bfarm_Referenzdatenbank_explorer" target="_blank" rel="noopener noreferrer">
+                        GitHub
+                    </a>
+                </p>
+            </div>
             <h2>Wirkstoff: {substance.substance_name}</h2>
             <Link to={`/`}>  zurück</Link>
             <h3>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h3>
