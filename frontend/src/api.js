@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://bfarm-referenzdatenbank-explorer.onrender.com";
-const API_BASE_URL_dev = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://bfarm-referenzdatenbank-explorer.onrender.com";
+const API_BASE_URL_dev = "http://0.0.0.0:8000";
 
 
 export const fetchMedicinalProducts = async (page = 1, perPage = 10) => {
