@@ -22,6 +22,7 @@ requirements.txt
 1. **Erstelle eine virtuelle Umgebung:**
 
     ```sh
+    cd backend
     python3 -m venv venv
     ```
 
@@ -40,7 +41,6 @@ requirements.txt
 4. **Starte den Flask-Server:**
 
     ```sh
-    cd explorer
     gunicorn -w 4 -b 0.0.0.0:8000 main:app
     ```
 

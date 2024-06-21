@@ -35,29 +35,36 @@ const PharmaceuticalProductList = () => {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                            <th>Key</th>
-                            <th>Name</th>
-                            <th>Short Form</th>
+                            <th>Produktschlüssel</th>
+                            <th>PZN</th>
+                            <th>Darreichungsform (kurz)</th>
+                            <th>Darreichungsform (lang)</th>
+                            <th>Darreichungsform (BfArM)</th>
+                            <th>Beschreibung</th>
+                            <th>Anzahl der Wirkstoffe</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pharmaceuticalProducts.map(product => (
                             <tr key={product.key}>
                                 <td><Link to={`/pharmaceutical_product/${product.key}`}>{product.key}</Link></td>
-                                <td>{product.name}</td>
+                                <td><Link to={`/pzn/${product.medicinal_product_key}`}>{product.medicinal_product_key}</Link></td>
                                 <td>{product.put_short}</td>
-
+                                <td>{product.put_long}</td>
+                                <td>{product.name}</td>
+                                <td>{product.description}</td>
+                                <td>{product.substances_count}</td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-                <PaginationContainer 
-                currentPage={page} 
-                totalPages={totalPages} 
-                onPageChange={setPage} 
-                perPage={perPage} 
-                onPerPageChange={setPerPage} 
-            />
+                <PaginationContainer
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                    perPage={perPage}
+                    onPerPageChange={setPerPage}
+                />
             </div>
         </div>
     );

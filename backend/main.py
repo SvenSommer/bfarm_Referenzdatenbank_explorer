@@ -91,6 +91,7 @@ def list_pharmaceutical_products():
             "name": pp.name,
             "term_id": pp.term_id,
             "description": pp.description,
+            "substances_count": len(pp.substances),
             "link": f"/pharmaceutical_product/{pp.key}"
         } for pp in data.pharmaceutical_products.values()
     ]

@@ -45,8 +45,8 @@ const PharmaceuticalProductDetail = () => {
                         <th>Darreichungsform (kurz)</th>
                         <th>Darreichungsform (lang)</th>
                         <th>Darreichungsform (BfArM)</th>
-                        <th>Anzahl der Wirkstoffe</th>
                         <th>Beschreibung</th>
+                        <th>Anzahl der Wirkstoffe</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,8 +57,8 @@ const PharmaceuticalProductDetail = () => {
                         <td>{product.put_short}</td>
                         <td>{product.put_long}</td>
                         <td>{product.name}</td>
-                        <td>{product.substances.length}</td>
                         <td>{product.description}</td>
+                        <td>{product.substances.length}</td>
                     </tr>
 
                 </tbody>

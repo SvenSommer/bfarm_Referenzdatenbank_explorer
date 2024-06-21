@@ -36,6 +36,7 @@ const SubstanceList = () => {
                     <thead>
                         <tr>
                             <th>Bezeichnung des Wirkstoffs</th>
+                            <th>ASK-Nr. BfArM</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,17 +45,18 @@ const SubstanceList = () => {
                                 <td>
                                     <Link to={`/substance_id/${substance.substance_id}`}>{substance.name}</Link>
                                 </td>
+                                <td>{substance.substance_id}</td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-                <PaginationContainer 
-                currentPage={page} 
-                totalPages={totalPages} 
-                onPageChange={setPage} 
-                perPage={perPage} 
-                onPerPageChange={setPerPage} 
-            />
+                <PaginationContainer
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                    perPage={perPage}
+                    onPerPageChange={setPerPage}
+                />
             </div>
         </div>
     );
