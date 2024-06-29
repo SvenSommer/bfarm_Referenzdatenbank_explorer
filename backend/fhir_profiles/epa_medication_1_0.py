@@ -24,9 +24,7 @@ class EpaMedication1_0:
         elif hasattr(obj, "__iter__") and not isinstance(obj, str):
             return [self.to_dict(v) for v in obj]
         elif hasattr(obj, "__dict__"):
-            data = dict([(key, self.to_dict(value)) for key, value in obj.__dict__.items()
-                         if not callable(value) and not key.startswith('_')])
-            return data
+            return {key: self.to_dict(value) for key, value in obj.__dict__.items() if not callable(value) and not key.startswith('_')}
         else:
             return obj
 
@@ -39,279 +37,186 @@ class EpaMedication1_0:
         else:
             return self.build_multiple_medical_produkt(data)
 
-    def build_multiple_medical_produkt(self, data):
-        contained_medications = [
-            Medication(
-                id="Augentropfen",
-                meta=Meta(
-                    profile=[
-                        "https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-pharmaceutical-product"
-                    ]
-                ),
-                extension=[
-                    Extension(
-                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
-                        valueCoding=Coding(
-                            system="http://snomed.info/sct",
-                            version="http://snomed.info/sct/900000000000207008/version/20240201",
-                            code="373873005",
-                            display="Pharmaceutical / biologic product (product)"
-                        )
-                    )
-                ],
-                identifier=[
-                    Identifier(
-                        system="https://gematik.de/fhir/epa-medication/sid/epa-medication-unique-identifier",
-                        value="59F8B8EF490A2A6D49C66D8C02574AB1E7C2EA97AEB925343F86D32616365984"
-                    )
-                ],
-                code=CodeableConcept(
-                    coding=[
-                        Coding(
-                            system="http://fhir.de/CodeSystem/abdata/Komponentennummer",
-                            code="01746517-1",
-                            display="Augentropfen"
-                        )
-                    ]
-                ),
-                ingredient=[
-                    {
-                        "itemCodeableConcept": CodeableConcept(
-                            coding=[
-                                Coding(
-                                    system="http://fhir.de/CodeSystem/bfarm/atc",
-                                    code="R01AC01",
-                                    display="Natriumcromoglicat"
-                                )
-                            ]
-                        ),
-                        "strength": Ratio(
-                            numerator=Quantity(
-                                value=20,
-                                unit="mg",
-                                system="http://unitsofmeasure.org",
-                                code="mg"
-                            ),
-                            denominator=Quantity(
-                                value=1,
-                                unit="ml",
-                                system="http://unitsofmeasure.org",
-                                code="ml"
-                            )
-                        )
-                    }
-                ],
-                batch={
-                    "lotNumber": "0132456"
-                }
-            ),
-            Medication(
-                id="NasenSpray",
-                meta=Meta(
-                    profile=[
-                        "https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-pharmaceutical-product"
-                    ]
-                ),
-                extension=[
-                    Extension(
-                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
-                        valueCoding=Coding(
-                            system="http://snomed.info/sct",
-                            version="http://snomed.info/sct/900000000000207008/version/20240201",
-                            code="373873005",
-                            display="Pharmaceutical / biologic product (product)"
-                        )
-                    )
-                ],
-                identifier=[
-                    Identifier(
-                        system="https://gematik.de/fhir/epa-medication/sid/epa-medication-unique-identifier",
-                        value="FFE864A95C512A02207CDE2F38A0A21786FC5EC5E80491B2660C019CBC59ADA4"
-                    )
-                ],
-                code=CodeableConcept(
-                    coding=[
-                        Coding(
-                            system="http://fhir.de/CodeSystem/abdata/Komponentennummer",
-                            code="01746517-2",
-                            display="Nasenspray, Lösung"
-                        )
-                    ]
-                ),
-                ingredient=[
-                    {
-                        "itemCodeableConcept": CodeableConcept(
-                            coding=[
-                                Coding(
-                                    system="http://fhir.de/CodeSystem/bfarm/atc",
-                                    code="R01AC01",
-                                    display="Natriumcromoglicat"
-                                )
-                            ]
-                        ),
-                        "strength": Ratio(
-                            numerator=Quantity(
-                                value=20,
-                                unit="mg",
-                                system="http://unitsofmeasure.org",
-                                code="mg"
-                            ),
-                            denominator=Quantity(
-                                value=1,
-                                unit="ml",
-                                system="http://unitsofmeasure.org",
-                                code="ml"
-                            )
-                        )
-                    }
-                ],
-                batch={
-                    "lotNumber": "56498416854"
-                }
+    def build_extension(self, url, system=None, code=None, display=None, value=None, version=None):
+        if system and code and display:
+            return Extension(
+                url=url,
+                valueCoding=Coding(system=system, code=code, display=display, version=version)
             )
-        ]
+        elif isinstance(value, bool):
+            return Extension(url=url, valueBoolean=value)
+        elif isinstance(value, str):
+            return Extension(url=url, valueString=value)
+        elif isinstance(value, int):
+            return Extension(url=url, valueInteger=value)
+        return None
 
-        medication = Medication(
-            id=str(uuid.uuid4()),
-            meta=Meta(
-                profile=[
-                    "https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication"
+    def build_ingredient(self, substance):
+        return {
+            "itemCodeableConcept": CodeableConcept(
+                coding=[
+                    Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]", display=substance.name)
                 ]
             ),
+            "strength": Ratio(
+                numerator=Quantity(
+                    value=float(substance.strength.split()[0]),
+                    unit=substance.strength.split()[1],
+                    system="http://unitsofmeasure.org",
+                    code=substance.strength.split()[1]
+                ),
+                #TODO denominator: WHere does this information come from?
+                denominator=Quantity(value=1)
+            )
+        }
+
+    def build_medication(self, med_id, profile, type_code, type_display, identifier_value, code_system, code_value, code_display, lot_number, ingredients):
+        return Medication(
+            id=med_id,
+            meta=Meta(profile=[profile]),
             extension=[
-                Extension(
-                    url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
-                    valueCoding=Coding(
+                ext for ext in [
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
                         system="http://snomed.info/sct",
-                        version="http://snomed.info/sct/900000000000207008/version/20240201",
-                        code="781405001",
-                        display="Medicinal product package (product)"
+                        code=type_code,
+                        display=type_display,
+                        version="http://snomed.info/sct/900000000000207008/version/20240201"
                     )
-                ),
-                Extension(
-                    url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/drug-category-extension",
-                    valueCoding=Coding(
-                        system="https://gematik.de/fhir/dev-epa-medication/CodeSystem/epa-drug-category-cs",
-                        code="00"
-                    )
-                ),
-                Extension(
-                    url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-id-vaccine-extension",
-                    valueBoolean=False
-                ),
-                Extension(
-                    url="http://fhir.de/StructureDefinition/normgroesse",
-                    valueCode=getattr(data, 'normgroesse',
-                                      '[Insert Normgroesse]')
+                ] if ext is not None
+            ],
+            identifier=[
+                Identifier(
+                    system="https://gematik.de/fhir/epa-medication/sid/epa-medication-unique-identifier",
+                    value=identifier_value
                 )
             ],
             code=CodeableConcept(
                 coding=[
-                    Coding(
-                        system="http://fhir.de/CodeSystem/ifa/pzn",
-                        code=getattr(data, 'pzn', '[Insert PZN]')
+                    Coding(system=code_system, code=code_value, display=code_display)
+                ]
+            ),
+            ingredient=ingredients,
+            batch={"lotNumber": lot_number}
+        )
+
+    def build_multiple_medical_produkt(self, data):
+        medications = []
+        for product in data.pharmaceutical_products:
+            ingredients = [self.build_ingredient(substance) for substance in product.substances]
+            medication = self.build_medication(
+                med_id=product.key,
+                profile="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-pharmaceutical-product",
+                type_code="373873005",
+                type_display="Pharmaceutical / biologic product (product)",
+                identifier_value=str(uuid.uuid4()),
+                code_system="http://fhir.de/CodeSystem/abdata/Komponentennummer",
+                code_value=product.key,
+                code_display=product.name,
+                lot_number="[Insert Lot Number]",
+                ingredients=ingredients
+            )
+            medications.append(medication)
+
+        medication = Medication(
+            id=str(uuid.uuid4()),
+            meta=Meta(profile=["https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication"]),
+            extension=[
+                ext for ext in [
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
+                        system="http://snomed.info/sct",
+                        code="781405001",
+                        display="Medicinal product package (product)",
+                        version="http://snomed.info/sct/900000000000207008/version/20240201"
+                    ),
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/drug-category-extension",
+                        system="https://gematik.de/fhir/dev-epa-medication/CodeSystem/epa-drug-category-cs",
+                        code="00"
+                    ),
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-id-vaccine-extension",
+                        value=False
+                    ),
+                    self.build_extension(
+                        url="http://fhir.de/StructureDefinition/normgroesse",
+                        value=getattr(data, 'normgroesse', '[Insert Normgroesse]')
                     )
-                ],
-                text=getattr(data, 'Artikelname', '[Insert Article Name]')
+                ] if ext is not None
+            ],
+            code=CodeableConcept(
+                coding=[
+                    Coding(system="http://fhir.de/CodeSystem/ifa/pzn", code=str(data.pzn), display=getattr(data, 'name', '[Insert Artikelname]'))
+                ]
             ),
             form=CodeableConcept(
                 coding=[
-                    Coding(
-                        system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM",
-                        code=getattr(data, 'form_code',
-                                     '[Insert Form Code]')
-                    )
+                    Coding(system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM", code=getattr(data, 'put_short', '[Insert Darreichungsform]'))
                 ]
             ),
-            contained=contained_medications,
+            contained=medications,
             ingredient=[
-                {
-                    "itemReference": Reference(
-                        reference="#NasenSpray"
-                    )
-                },
-                {
-                    "itemReference": Reference(
-                        reference="#Augentropfen"
-                    )
-                }
+                {"itemReference": Reference(reference=f"#{product.key}")} for product in data.pharmaceutical_products
             ]
         )
 
-        bundle = Bundle(
-            type="searchset",
-            entry=[BundleEntry(resource=medication)]
-        )
-
-        return bundle
+        return medication
+        
 
     def build_single_medical_produkt(self, data):
         medication = Medication(
             id=str(uuid.uuid4()),
-            meta=Meta(
-                profile=[
-                    "https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication"
-                ]
-            ),
+            meta=Meta(profile=["https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication"]),
             extension=[
-                Extension(
-                    url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
-                    valueCoding=Coding(
+                ext for ext in [
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
                         system="http://snomed.info/sct",
-                        version="http://snomed.info/sct/900000000000207008/version/20240201",
                         code="781405001",
-                        display="Medicinal product package (product)"
-                    )
-                ),
-                Extension(
-                    url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/drug-category-extension",
-                    valueCoding=Coding(
+                        display="Medicinal product package (product)",
+                        version="http://snomed.info/sct/900000000000207008/version/20240201"
+                    ),
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/drug-category-extension",
                         system="https://gematik.de/fhir/dev-epa-medication/CodeSystem/epa-drug-category-cs",
                         code="00"
+                    ),
+                    self.build_extension(
+                        url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-id-vaccine-extension",
+                        value=False
+                    ),
+                    self.build_extension(
+                        url="http://fhir.de/StructureDefinition/normgroesse",
+                        value=getattr(data, 'normgroesse', '[Insert Normgroesse]')
                     )
-                ),
-                Extension(
-                    url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-id-vaccine-extension",
-                    valueBoolean=False
-                ),
-                Extension(
-                    url="http://fhir.de/StructureDefinition/normgroesse",
-                    valueCode=getattr(data, 'normgroesse',
-                                      '[Insert Normgroesse]')
-                )
+                ] if ext is not None
             ],
             code=CodeableConcept(
                 coding=[
-                    Coding(
-                        system="http://fhir.de/CodeSystem/ifa/pzn",
-                        code=getattr(data, 'pzn', '[Insert PZN]')
-                    )
-                ],
-                text=getattr(data, 'Artikelname', '[Insert Article Name]')
+                    Coding(system="http://fhir.de/CodeSystem/ifa/pzn", code=str(data.pzn), display=getattr(data, 'name', '[Insert Artikelname]'))
+                ]
             ),
             form=CodeableConcept(
                 coding=[
-                    Coding(
-                        system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM",
-                        code=getattr(data, 'form_code',
-                                     '[Insert Form Code]')
-                    )
+                    Coding(system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM", code=getattr(data, 'form_code', '[Insert Form Code]'))
                 ]
             ),
             amount=Ratio(
                 numerator=Quantity(
-                    value=20,
-                    unit="St",
+                    value=0,
+                    unit="[Insert Total Quantity Formulation Unit]",
                     extension=[
-                        Extension(
-                            url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-total-quantity-formulation-extension",
-                            valueString="20 St."
-                        )
+                        ext for ext in [
+                            self.build_extension(
+                                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-total-quantity-formulation-extension",
+                                value="[Insert Total Quantity Formulation]"
+                            )
+                        ] if ext is not None
                     ]
                 ),
-                denominator=Quantity(
-                    value=1
-                )
+                denominator=Quantity(value=1)
             )
+            #TODO missing ingredients
         )
         return medication
