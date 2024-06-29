@@ -1,3 +1,4 @@
+from fhir_profiles.fhir_profile_factory import FHIRProfileFactory
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from models import BfarmData
@@ -182,8 +183,30 @@ def get_pharmaceutical_products_by_substance_id(substance_id):
     else:
         return jsonify({"error": "Substance not found"}), 404
 
+@app.route('/fhir/medication/<pzn>', methods=['GET'])
+def get_fhir_medication(pzn):
+    result = data.get_medicinal_product_by_pzn(pzn)
+    if not result:
+        return jsonify({"error": "PZN not found"}), 404
+    
+    profile = request.args.get('profile')
+    version = request.args.get('version')
+    if not profile or not version:
+        return jsonify({"error": "Profile and version are required parameters"}), 400
 
-@app.route('/')
+    try:
+        bundle = FHIRProfileFactory.create(profile, version, result)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    
+    fhir_format = request.args.get('format', 'json')
+    if fhir_format == 'json':
+        return jsonify(bundle.dict())
+    elif fhir_format == 'xml':
+        return app.response_class(bundle.xml(), mimetype='application/fhir+xml')
+    else:
+        return jsonify({"error": "Unsupported FHIR format"}), 400
+
 def index():
     return "Welcome to the Bfarm Data Explorer Backend!"
 
