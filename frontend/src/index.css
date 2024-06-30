@@ -54,3 +54,22 @@ h1 {
 .repo-notice a:hover {
     text-decoration: underline;
 }
+
+.dropdown-table-row {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+
+}
+
+.dropdown-table {
+    min-width: 340px; /* Ensure the dropdown has a minimum width */
+}
+
+.dropdown-toggle::after {
+    display: none; /* Hide the caret */
+}
+
+.icon-space {
+    margin-right: 15px; /* Add space between the icons */
+}

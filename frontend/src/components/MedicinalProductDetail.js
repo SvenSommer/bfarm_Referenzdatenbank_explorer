@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Table } from 'react-bootstrap';
-import { fetchMedicinalProductByPzn } from '../api';
+import { Table,  Dropdown,  ButtonGroup } from 'react-bootstrap';
+import { fetchMedicinalProductByPzn, handleDownload, fetchSupportedFHIRProfiles } from '../api';
 
 const MedicinalProductDetail = () => {
     const [product, setProduct] = useState(null);
     const { pzn } = useParams();
+    const [supportedProfiles, setSupportedProfiles] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const data = await fetchMedicinalProductByPzn(pzn);
                 setProduct(data);
+
+                const profiles = await fetchSupportedFHIRProfiles();
+                setSupportedProfiles(profiles);
             } catch (error) {
                 console.error('Error fetching medicinal product details:', error);
             }
@@ -29,7 +33,7 @@ const MedicinalProductDetail = () => {
             </a> </h6><p></p>
             <div className="repo-notice">
                 <p>
-                    Hast du einen Verbesserungsvorschlag? Schick einen Pull Request! 👉 
+                    Hast du einen Verbesserungsvorschlag? Schick einen Pull Request! 👉
                     <a href="https://github.com/SvenSommer/bfarm_Referenzdatenbank_explorer" target="_blank" rel="noopener noreferrer">
                         GitHub
                     </a>
@@ -46,7 +50,7 @@ const MedicinalProductDetail = () => {
                         <th>Darreichungsform (kurz)</th>
                         <th>Darreichungsform (lang)</th>
                         <th>Darreichungsform (BfArM)</th>
-
+                        <th>FHIR Profiles</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,6 +62,56 @@ const MedicinalProductDetail = () => {
                         <td>{product.put_short}</td>
                         <td>{product.put_long}</td>
                         <td>{product.name}</td>
+                        <td>
+                            <Dropdown as={ButtonGroup} className="icon-space">
+                                <Dropdown.Toggle as="a" id="dropdown-download">
+                                    <i className="fas fa-download"></i>
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <table className="dropdown-table">
+                                        <tbody>
+                                            {Object.keys(supportedProfiles).map(profile => (
+                                                supportedProfiles[profile].map(version => (
+                                                    <tr className="dropdown-table-row" key={`${profile}-${version}`}>
+                                                        <td>{profile} {version}</td>
+                                                        <td>
+                                                            <a href="#" onClick={() => handleDownload(product.pzn, profile, version, 'json', 'download')}>JSON</a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="#" onClick={() => handleDownload(product.pzn, profile, version, 'xml', 'download')}>XML</a>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <Dropdown as={ButtonGroup} className="icon-space">
+                                <Dropdown.Toggle as="a" id="dropdown-view">
+                                    <i className="fas fa-eye"></i>
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <table className="dropdown-table">
+                                        <tbody>
+                                            {Object.keys(supportedProfiles).map(profile => (
+                                                supportedProfiles[profile].map(version => (
+                                                    <tr className="dropdown-table-row" key={`${profile}-${version}`}>
+                                                        <td>{profile} {version}</td>
+                                                        <td>
+                                                            <a href="#" onClick={() => handleDownload(product.pzn, profile, version, 'json', 'view')}>JSON</a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="#" onClick={() => handleDownload(product.pzn, profile, version, 'xml', 'view')}>XML</a>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </td>
                     </tr>
 
                 </tbody>

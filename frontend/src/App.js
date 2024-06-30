@@ -7,6 +7,7 @@ import SubstanceList from './components/SubstanceList';
 import MedicinalProductDetail from './components/MedicinalProductDetail';
 import PharmaceuticalProductDetail from './components/PharmaceuticalProductDetail';
 import SubstanceDetail from './components/SubstanceDetail';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
     return (
