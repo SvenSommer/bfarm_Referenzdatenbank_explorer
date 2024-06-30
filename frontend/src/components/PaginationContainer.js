@@ -4,7 +4,8 @@ import Pagination from './Pagination';
 
 const PaginationContainer = ({ currentPage, totalPages, onPageChange, perPage, onPerPageChange }) => {
     const handlePerPageChange = (event) => {
-        onPerPageChange(parseInt(event.target.value, 10));
+        const value = event.target.value;
+        onPerPageChange(parseInt(value, 10));
         onPageChange(1); // Reset to first page when perPage changes
     };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Form, Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap';
+import { Table, Form, Dropdown, ButtonGroup } from 'react-bootstrap';
 import { fetchMedicinalProducts, fetchSupportedFHIRProfiles, handleDownload } from '../api';
 import { Link } from 'react-router-dom';
 import PaginationContainer from './PaginationContainer';
@@ -9,14 +9,17 @@ const MedicinalProductList = () => {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [totalFound, setTotalFound] = useState(0); // New state for total found items
+    const [searchQuery, setSearchQuery] = useState('');
     const [supportedProfiles, setSupportedProfiles] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await fetchMedicinalProducts(page, perPage);
+                const data = await fetchMedicinalProducts(page, perPage, searchQuery);
                 setMedicinalProducts(data.items);
                 setTotalPages(data.total_pages);
+                setTotalFound(data.total_found); // Set the total found items
                 
                 const profiles = await fetchSupportedFHIRProfiles();
                 setSupportedProfiles(profiles);
@@ -25,17 +28,31 @@ const MedicinalProductList = () => {
             }
         };
         fetchData();
-    }, [page, perPage]);
+    }, [page, perPage, searchQuery]);
 
-    const handlePerPageChange = (event) => {
-        setPerPage(parseInt(event.target.value, 10));
+    const handlePerPageChange = (perPageValue) => {
+        setPerPage(perPageValue);
         setPage(1); // Reset to first page when perPage changes
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+        setPage(1); // Reset to first page when search query changes
     };
 
     return (
         <div className="medicinal-product-list">
             <div className="container">
                 <h1>Medizinische Produkte</h1>
+                <Form.Group controlId="searchQuery">
+                    <Form.Control 
+                        type="text" 
+                        placeholder="Nach Medizinischen Produkten suchen..." 
+                        value={searchQuery} 
+                        onChange={handleSearchChange} 
+                    />
+                </Form.Group>
+                <p>{totalFound} Ergebnisse gefunden</p> {/* Display the total found items */}
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -116,7 +133,7 @@ const MedicinalProductList = () => {
                     totalPages={totalPages} 
                     onPageChange={setPage} 
                     perPage={perPage} 
-                    onPerPageChange={setPerPage} 
+                    onPerPageChange={handlePerPageChange} 
                 />
             </div>
         </div>

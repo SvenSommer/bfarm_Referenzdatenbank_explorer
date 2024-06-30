@@ -1,24 +1,24 @@
-const API_BASE_URL_prod = "https://bfarm-referenzdatenbank-explorer.onrender.com";
-const API_BASE_URL = "http://0.0.0.0:8000";
+const API_BASE_URL = "https://bfarm-referenzdatenbank-explorer.onrender.com";
+const API_BASE_URL_dev = "http://0.0.0.0:8000";
 
-export const fetchMedicinalProducts = async (page = 1, perPage = 10) => {
-    const response = await fetch(`${API_BASE_URL}/medicinal_products?page=${page}&per_page=${perPage}`);
+export const fetchMedicinalProducts = async (page = 1, perPage = 10, query = '') => {
+    const response = await fetch(`${API_BASE_URL}/medicinal_products?page=${page}&per_page=${perPage}&query=${query}`);
     if (!response.ok) {
         throw new Error('Failed to fetch medicinal products');
     }
     return response.json();
 };
 
-export const fetchPharmaceuticalProducts = async (page = 1, perPage = 10) => {
-    const response = await fetch(`${API_BASE_URL}/pharmaceutical_products?page=${page}&per_page=${perPage}`);
+export const fetchPharmaceuticalProducts = async (page = 1, perPage = 10, query = '') => {
+    const response = await fetch(`${API_BASE_URL}/pharmaceutical_products?page=${page}&per_page=${perPage}&query=${query}`);
     if (!response.ok) {
         throw new Error('Failed to fetch pharmaceutical products');
     }
     return response.json();
 };
 
-export const fetchSubstances = async (page = 1, perPage = 10) => {
-    const response = await fetch(`${API_BASE_URL}/substances?page=${page}&per_page=${perPage}`);
+export const fetchSubstances = async (page = 1, perPage = 10, query = '') => {
+    const response = await fetch(`${API_BASE_URL}/substances?page=${page}&per_page=${perPage}&query=${query}`);
     if (!response.ok) {
         throw new Error('Failed to fetch substances');
     }

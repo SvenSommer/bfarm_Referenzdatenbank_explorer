@@ -4,7 +4,7 @@ from flask_cors import CORS
 from models import BfarmData
 
 app = Flask(__name__, static_folder='./../static', template_folder='./../templates')
-allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:5000", "http://localhost:5000", "https://bfarm-referenzdatenbank-explorer-frontend.onrender.com"]
+allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:5000","http://localhost:5000", "https://bfarm-referenzdatenbank-explorer-frontend.onrender.com"]
 CORS(app, resources={r"/*": {"origins": allowed_origins}})
 # Initialize BfarmData
 data = BfarmData(zip_file_path='./../data/20240617-REFERENCE.zip', extraction_dir='./../data/20240617-REFERENCE')
@@ -61,11 +61,11 @@ def paginate(queryset, page, per_page):
 
 @app.route('/medicinal_products', methods=['GET'])
 def list_medicinal_products():
+    query = request.args.get('query', '').lower()
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
-    search_query = request.args.get('search', '').lower()
     
-    products = [
+    filtered_products = [
         {
             "key": mp.key,
             "pzn": mp.pzn,
@@ -77,17 +77,24 @@ def list_medicinal_products():
             "term_id": mp.term_id,
             "link": f"/pzn/{mp.pzn}"
         } for mp in data.medicinal_products.values()
-        if search_query in mp.name.lower()
+        if query in str(mp.pzn).lower() or query in mp.name.lower() or query in (mp.put_short.lower() if isinstance(mp.put_short, str) else '') or query in (mp.put_long.lower() if isinstance(mp.put_long, str) else '')
     ]
-    return jsonify(paginate(products, page, per_page))
+    
+    paginated_results = paginate(filtered_products, page, per_page)
+    
+    return jsonify({
+        "total_found": len(filtered_products),
+        **paginated_results
+    })
+
+
 
 @app.route('/pharmaceutical_products', methods=['GET'])
 def list_pharmaceutical_products():
+    query = request.args.get('query', '').lower()
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
-    search_query = request.args.get('search', '').lower()
-    
-    products = [
+    filtered_products = [
         {
             "key": pp.key,
             "medicinal_product_key": pp.medicinal_product_key,
@@ -100,29 +107,43 @@ def list_pharmaceutical_products():
             "substances_count": len(pp.substances),
             "link": f"/pharmaceutical_product/{pp.key}"
         } for pp in data.pharmaceutical_products.values()
-        if search_query in pp.name.lower()
+        if query in pp.name.lower() or query in(pp.put_short.lower() if isinstance(pp.put_short, str) else '') or query in (pp.put_long.lower() if isinstance(pp.put_long, str) else '') or query in str(pp.description).lower()
     ]
-    return jsonify(paginate(products, page, per_page))
+     
+    paginated_results = paginate(filtered_products, page, per_page)
+        
+    return jsonify({
+        "total_found": len(filtered_products),
+        **paginated_results
+    })
 
 @app.route('/substances', methods=['GET'])
 def list_substances():
+    query = request.args.get('query', '').lower()
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
-    search_query = request.args.get('search', '').lower()
-
+    # Verwende ein Set, um doppelte Einträge zu vermeiden
     unique_substances = {}
     
     for sub in data.substances.values():
-        if sub.substance_id not in unique_substances and search_query in sub.name.lower():
+        if sub.substance_id not in unique_substances:
             unique_substances[sub.substance_id] = {
                 "name": sub.name,
                 "substance_id": sub.substance_id,
                 "link": f"/substance_id/{sub.substance_id}"
             }
-
-    substances_list = list(unique_substances.values())
     
-    return jsonify(paginate(substances_list, page, per_page))
+    filtered_substances = [
+        substance for substance in unique_substances.values()
+        if query in str(substance["name"]).lower()
+    ]
+    
+    paginated_results = paginate(filtered_substances, page, per_page)
+            
+    return jsonify({
+        "total_found": len(filtered_substances),
+        **paginated_results
+    })
 
 @app.route('/pharmaceutical_product/<key>', methods=['GET'])
 def get_pharmaceutical_product(key):
@@ -179,6 +200,7 @@ def get_pharmaceutical_products_by_substance_id(substance_id):
     ]
     
     if substance_products:
+        # Der Name des Wirkstoffs wird aus dem ersten gefundenen Substanzdatensatz entnommen
         substance_name = next(sub.name for sub in data.substances.values() if sub.substance_id == int(substance_id))
         return jsonify({
             "substance_name": substance_name,
@@ -229,6 +251,6 @@ def get_fhir_medication(pzn):
     else:
         return jsonify({"error": "Unsupported FHIR format"}), 400
 
-
+@app.route('/')
 def index():
     return "Welcome to the Bfarm Data Explorer Backend!"
