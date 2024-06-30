@@ -1,5 +1,5 @@
 from fhir_profiles.fhir_profile_factory import FHIRProfileFactory
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from models import BfarmData
 
@@ -183,6 +183,14 @@ def get_pharmaceutical_products_by_substance_id(substance_id):
     else:
         return jsonify({"error": "Substance not found"}), 404
 
+@app.route('/fhir/profiles', methods=['GET'])
+def get_supported_fhir_profiles():
+    try:
+        profiles = FHIRProfileFactory.get_supported_profiles()
+        return jsonify(profiles)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/fhir/medication/<pzn>', methods=['GET'])
 def get_fhir_medication(pzn):
     result = data.get_medicinal_product_by_pzn(pzn)
@@ -200,12 +208,22 @@ def get_fhir_medication(pzn):
         return jsonify({"error": str(e)}), 400
     
     fhir_format = request.args.get('format', 'json')
+    action = request.args.get('action', 'download')
+    disposition = 'inline' if action == 'view' else 'attachment'
+    filename = f"{pzn}_{profile}_{version}.{fhir_format}"
+    
     if fhir_format == 'json':
-        return jsonify(bundle.dict())
+        response = jsonify(bundle.dict())
+        response.headers['Content-Disposition'] = f'{disposition}; filename="{filename}"'
+        return response
     elif fhir_format == 'xml':
-        return app.response_class(bundle.xml(), mimetype='application/fhir+xml')
+        response = Response(bundle.xml(), mimetype='application/fhir+xml')
+        response.headers['Content-Type'] = 'application/xml'
+        response.headers['Content-Disposition'] = f'{disposition}; filename="{filename}"'
+        return response
     else:
         return jsonify({"error": "Unsupported FHIR format"}), 400
+
 
 def index():
     return "Welcome to the Bfarm Data Explorer Backend!"
