@@ -3,3 +3,4 @@ pandas
 flask-cors
 gunicorn
 fhir.resources
+fhir.resources[xml]
