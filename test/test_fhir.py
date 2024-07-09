@@ -43,6 +43,7 @@ def check_single_pzn(pzn):
     if errors:
         write_errors_to_xml(errors)
 
+# Funktion zum Schreiben von Fehlern in eine XML-Datei
 def write_errors_to_xml(errors):
     root = ET.Element("Errors")
 
@@ -52,6 +53,10 @@ def write_errors_to_xml(errors):
         pzn_element.text = str(error['pzn'])
         message_element = ET.SubElement(error_element, "Message")
         message_element.text = error['error']
+        detail_url1 = ET.SubElement(error_element, 'Detail-URL')
+        detail_url1.text = f"https://bfarm-referenzdatenbank-explorer-frontend.onrender.com/pzn/{error['pzn']}"
+        detail_url2 = ET.SubElement(error_element, 'Rawdata-URL')
+        detail_url2.text = f"https://bfarm-referenzdatenbank-explorer.onrender.com/pzn/{error['pzn']}"
 
     tree = ET.ElementTree(root)
     tree.write("pzn_errors.xml", encoding='utf-8', xml_declaration=True)
