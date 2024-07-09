@@ -45,34 +45,29 @@ class EpaMedication1_0:
             return Extension(url=url, valueString=value)
         if isinstance(value, int):
             return Extension(url=url, valueInteger=value)
-        if url == "http://fhir.de/StructureDefinition/normgroesse" and isinstance(value, str):
-            return Extension(url=url, valueCode=value)
         return None
 
     def build_ingredient(self, substance):
         strength_value, strength_unit = substance.strength.split()
-        denominator_unit = "[Insert Denominator Unit]" if substance.denominator_unit else "1"
-        denominator_code = "[Insert Denominator Code]" if substance.denominator_code else "#1"
-        coding_list = [
-            Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]" if substance.atc else None, display="[Insert ATC]" if substance.atc else None),
-            Coding(system="http://fhir.de/CodeSystem/ask", code=substance.substance_id, display=substance.name)
-        ]
-        if substance.snomed_code:
-            coding_list.append(Coding(system="http://snomed.info/sct", code=substance.snomed_code, display=substance.snomed_name, version="http://snomed.info/sct/900000000000207008/version/20240201"))
-
         return {
-            "itemCodeableConcept": CodeableConcept(coding=[c for c in coding_list if c.code]),
+            "itemCodeableConcept": CodeableConcept(
+                coding=[
+                    Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]", display="[Insert ATC]"),
+                    Coding(system="http://fhir.de/CodeSystem/ask", code=substance.substance_id, display=substance.name),
+                    Coding(system="http://snomed.info/sct", code="[Insert Ingredient Snomed Code]", display="[Insert Ingredient Snomed Name]", version="http://snomed.info/sct/900000000000207008/version/20240201")
+                ]
+            ),
             "isActive": True,
             "strength": Ratio(
                 numerator=Quantity(value=float(strength_value), unit=strength_unit, system="http://unitsofmeasure.org", code=strength_unit),
-                denominator=Quantity(value=1, unit=denominator_unit, system="http://unitsofmeasure.org", code=denominator_code)
+                denominator=Quantity(value=1, unit="[Insert Denominator Unit]", system="http://unitsofmeasure.org", code="[Insert Denominator Code]")
             )
         }
 
     def build_medication(self, med_id, profile, type_code, type_display, identifier_value, code_system, code_value, code_display, lot_number, ingredients):
         extensions = [
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/epa-medication-type-extension",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
                 system="http://snomed.info/sct",
                 code=type_code,
                 display=type_display,
@@ -95,7 +90,7 @@ class EpaMedication1_0:
         medications = [
             self.build_medication(
                 med_id=product.key,
-                profile="https://gematik.de/fhir/epa-medication/StructureDefinition/epa-medication-pharmaceutical-product",
+                profile="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-pharmaceutical-product",
                 type_code="373873005",
                 type_display="Pharmaceutical / biologic product (product)",
                 identifier_value=str(uuid.uuid4()),
@@ -110,19 +105,19 @@ class EpaMedication1_0:
 
         common_extensions = [
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/epa-medication-type-extension",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
                 system="http://snomed.info/sct",
                 code="781405001",
                 display="Medicinal product package (product)",
                 version="http://snomed.info/sct/900000000000207008/version/20240201"
             ),
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/drug-category-extension",
-                system="https://gematik.de/fhir/epa-medication/CodeSystem/epa-drug-category-cs",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/drug-category-extension",
+                system="https://gematik.de/fhir/dev-epa-medication/CodeSystem/epa-drug-category-cs",
                 code="00"
             ),
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/medication-id-vaccine-extension",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-id-vaccine-extension",
                 value=False
             ),
             self.build_extension(
@@ -134,15 +129,15 @@ class EpaMedication1_0:
 
         medication = Medication(
             id=str(uuid.uuid4()),
-            meta=Meta(profile=["https://gematik.de/fhir/epa-medication/StructureDefinition/epa-medication"]),
+            meta=Meta(profile=["https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication"]),
             extension=common_extensions,
             code=CodeableConcept(
                 coding=[
                     Coding(system="http://fhir.de/CodeSystem/ifa/pzn", code=str(data.pzn), display=getattr(data, 'artikelname', '[Insert Artikelname]')),
-                    Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]" if data.atc else None, display="[Insert ATC]" if data.atc else None)
+                    Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]", display="[Insert ATC]")
                 ]
             ),
-            form=CodeableConcept(coding=[Coding(system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM", code=getattr(data, 'kbv_dar', 'KPG') if data.multiple_ppt > 0 else '[Insert KBV Form Code]')]),
+            form=CodeableConcept(coding=[Coding(system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM", code=getattr(data, 'kbv_dar', '[Insert KBV Form Code]'))]),
             contained=medications,
             ingredient=[{"itemReference": Reference(reference=f"#{product.key}")} for product in data.pharmaceutical_products]
         )
@@ -154,19 +149,19 @@ class EpaMedication1_0:
 
         common_extensions = [
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/epa-medication-type-extension",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication-type-extension",
                 system="http://snomed.info/sct",
                 code="781405001",
                 display="Medicinal product package (product)",
                 version="http://snomed.info/sct/900000000000207008/version/20240201"
             ),
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/drug-category-extension",
-                system="https://gematik.de/fhir/epa-medication/CodeSystem/epa-drug-category-cs",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/drug-category-extension",
+                system="https://gematik.de/fhir/dev-epa-medication/CodeSystem/epa-drug-category-cs",
                 code="00"
             ),
             self.build_extension(
-                url="https://gematik.de/fhir/epa-medication/StructureDefinition/medication-id-vaccine-extension",
+                url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-id-vaccine-extension",
                 value=False
             ),
             self.build_extension(
@@ -178,13 +173,13 @@ class EpaMedication1_0:
 
         medication = Medication(
             id=str(uuid.uuid4()),
-            meta=Meta(profile=["https://gematik.de/fhir/epa-medication/StructureDefinition/epa-medication"]),
+            meta=Meta(profile=["https://gematik.de/fhir/dev-epa-medication/StructureDefinition/epa-medication"]),
             extension=common_extensions,
             identifier=[Identifier(system="https://gematik.de/fhir/epa-medication/sid/epa-medication-unique-identifier", value=str(uuid.uuid4()))],
             code=CodeableConcept(
                 coding=[
                     Coding(system="http://fhir.de/CodeSystem/ifa/pzn", code=str(data.pzn), display=getattr(data, 'artikelname', '[Insert Artikelname]')),
-                    Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]" if data.atc else None, display="[Insert ATC]" if data.atc else None)
+                    Coding(system="http://fhir.de/CodeSystem/bfarm/atc", code="[Insert ATC]", display="[Insert ATC]")
                 ]
             ),
             form=CodeableConcept(coding=[Coding(system="https://fhir.kbv.de/CodeSystem/KBV_CS_SFHIR_KBV_DARREICHUNGSFORM", code=getattr(data, 'kbv_dar', '[Insert KBV Form Code]'))]),
@@ -194,12 +189,12 @@ class EpaMedication1_0:
                     unit="[Insert Total Quantity Formulation Unit]",
                     extension=[
                         self.build_extension(
-                            url="https://gematik.de/fhir/epa-medication/StructureDefinition/medication-total-quantity-formulation-extension",
+                            url="https://gematik.de/fhir/dev-epa-medication/StructureDefinition/medication-total-quantity-formulation-extension",
                             value="[Insert Total Quantity Formulation]"
                         )
                     ]
                 ),
-                denominator=Quantity(value=1, unit="[Insert Denominator Unit]" if data.denominator_unit else "1", system="http://unitsofmeasure.org", code="[Insert Denominator Code]" if data.denominator_code else "#1")
+                denominator=Quantity(value=1, unit="[Insert Denominator Unit]", system="http://unitsofmeasure.org", code="[Insert Denominator Code]")
             ),
             ingredient=ingredients
         )
