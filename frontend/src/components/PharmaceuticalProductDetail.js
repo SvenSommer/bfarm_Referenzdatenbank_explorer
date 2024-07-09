@@ -53,7 +53,7 @@ const PharmaceuticalProductDetail = () => {
 
                     <tr key={product.key}>
                         <td>{product.key}</td>
-                        <td><Link to={`/pzn/${product.medicinal_product_key}`}>{product.medicinal_product_key}</Link></td>
+                        <td><Link to={`/pzn/${product.medicinal_product_key}`}>{String(product.medicinal_product_key).padStart(8, '0')}</Link></td>
                         <td>{product.put_short}</td>
                         <td>{product.put_long}</td>
                         <td>{product.name}</td>
@@ -79,7 +79,7 @@ const PharmaceuticalProductDetail = () => {
                             <td>{substance.rank}</td>
                             <td><Link to={`/substance_id/${substance.substance_id}`}>{substance.name}</Link></td>
                             <td>{substance.strength}</td>
-                            <td>{substance.substance_id}</td>
+                            <td>{String(substance.substance_id).padStart(5, '0')}</td>
                         </tr>
                     ))}
                 </tbody>

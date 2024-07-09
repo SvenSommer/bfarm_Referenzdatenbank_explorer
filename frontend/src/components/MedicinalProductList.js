@@ -68,7 +68,7 @@ const MedicinalProductList = () => {
                     <tbody>
                         {medicinalProducts.map(product => (
                             <tr key={product.key}>
-                                <td><Link to={`/pzn/${product.pzn}`}>{product.pzn}</Link></td>
+                                <td><Link to={`/pzn/${product.pzn}`}>{String(product.pzn).padStart(8, '0')}</Link></td>
                                 <td>{product.multiple_ppt === 1 ? "Ja" : "Nein"}</td>
                                 <td>{product.put_short}</td>
                                 <td>{product.put_long}</td>

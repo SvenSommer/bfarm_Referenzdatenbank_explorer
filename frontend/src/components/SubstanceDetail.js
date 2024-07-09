@@ -36,7 +36,7 @@ const SubstanceDetail = () => {
                 </p>
             </div>
             <h2>Wirkstoff: {substance.substance_name}</h2>
-            <p>ASK-Nr. BfArM: {substance.substance_id}</p>
+            <p>ASK-Nr. BfArM: {String(substance.substance_id).padStart(5, '0')}</p>
             <Link to={`/`}>  zurück</Link>
             <h3>{substance.substance_name} wird in folgenden pharmazeutischen Produkten verwendet</h3>
             <Table striped bordered hover>
@@ -50,7 +50,7 @@ const SubstanceDetail = () => {
                 <tbody>
                     {substance.pharmaceutical_products.map(product => (
                         <tr key={product.pharmaceutical_product_key}>
-                            <td><Link to={`/pharmaceutical_product/${product.pharmaceutical_product_key}`}>{product.pharmaceutical_product_key}</Link></td>
+                            <td><Link to={`/pharmaceutical_product/${product.pharmaceutical_product_key}`}>{String(product.pharmaceutical_product_key).padStart(10, '0')}</Link></td>
                             <td>{product.description}</td>
                             <td>{product.strength}</td>
                         </tr>

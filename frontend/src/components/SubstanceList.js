@@ -63,7 +63,7 @@ const SubstanceList = () => {
                                 <td>
                                     <Link to={`/substance_id/${substance.substance_id}`}>{substance.name}</Link>
                                 </td>
-                                <td>{substance.substance_id}</td>
+                                <td>{String(substance.substance_id).padStart(5, '0')}</td>
                             </tr>
                         ))}
                     </tbody>

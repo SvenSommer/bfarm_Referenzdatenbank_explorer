@@ -65,7 +65,7 @@ const PharmaceuticalProductList = () => {
                         {pharmaceuticalProducts.map(product => (
                             <tr key={product.key}>
                                 <td><Link to={`/pharmaceutical_product/${product.key}`}>{product.key}</Link></td>
-                                <td><Link to={`/pzn/${product.medicinal_product_key}`}>{product.medicinal_product_key}</Link></td>
+                                <td><Link to={`/pzn/${product.medicinal_product_key}`}>{String(product.medicinal_product_key).padStart(8, '0')}</Link></td>
                                 <td>{product.put_short}</td>
                                 <td>{product.put_long}</td>
                                 <td>{product.name}</td>

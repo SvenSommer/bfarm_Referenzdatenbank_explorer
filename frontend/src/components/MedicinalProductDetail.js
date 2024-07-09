@@ -39,7 +39,7 @@ const MedicinalProductDetail = () => {
                     </a>
                 </p>
             </div>
-            <h2>Medizinisches Produkt mit PZN: {product.pzn}</h2>
+            <h2>Medizinisches Produkt mit PZN: {String(product.pzn).padStart(8, '0')}</h2>
             <Link to={`/`}>  zurück</Link>
             <Table striped bordered hover>
                 <thead>
@@ -56,7 +56,7 @@ const MedicinalProductDetail = () => {
                 <tbody>
 
                     <tr key={product.key}>
-                        <td>{product.pzn}</td>
+                        <td>{String(product.pzn).padStart(8, '0')}</td>
                         <td>{product.count_substance}</td>
                         <td>{product.multiple_ppt === 1 ? "Ja" : "Nein"}</td>
                         <td>{product.put_short}</td>
