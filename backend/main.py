@@ -232,6 +232,7 @@ def get_fhir_medication(pzn):
     try:
         bundle = FHIRProfileFactory.create(profile, version, result)
     except ValueError as e:
+        print(e)
         return jsonify({"error": str(e)}), 400
     
     fhir_format = request.args.get('format', 'json')
